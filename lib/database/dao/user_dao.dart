@@ -13,5 +13,11 @@ abstract class UserDao {
   Future<int> updateUser(UserTable user);
 
   @delete
-  Future<int> deleteUser(int id);
+  Future<int> deleteUser(UserTable user);
+}
+
+@dao
+abstract class TableTmpDao {
+  @insert
+  Future<int> insertTemp(TableTmp tmp);
 }

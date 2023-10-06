@@ -61,6 +61,10 @@ class _$AppDatabase extends AppDatabase {
     changeListener = listener ?? StreamController<String>.broadcast();
   }
 
+  UserDao? _userDaoInstance;
+
+  TableTmpDao? _tableDaoInstance;
+
   Future<sqflite.Database> open(
     String path,
     List<Migration> migrations, [
@@ -84,6 +88,8 @@ class _$AppDatabase extends AppDatabase {
       onCreate: (database, version) async {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `email` TEXT NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `table_tmp` (`fid` INTEGER NOT NULL, `pid` INTEGER PRIMARY KEY AUTOINCREMENT, `someData` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -92,6 +98,109 @@ class _$AppDatabase extends AppDatabase {
   }
 
   @override
-  // TODO: implement userDao
-  UserTable get userDao => throw UnimplementedError();
+  UserDao get userDao {
+    return _userDaoInstance ??= _$UserDao(database, changeListener);
+  }
+
+  @override
+  TableTmpDao get tableDao {
+    return _tableDaoInstance ??= _$TableTmpDao(database, changeListener);
+  }
+}
+
+class _$UserDao extends UserDao {
+  _$UserDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
+        _userTableInsertionAdapter = InsertionAdapter(
+            database,
+            'user',
+            (UserTable item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'email': item.email
+                }),
+        _userTableUpdateAdapter = UpdateAdapter(
+            database,
+            'user',
+            ['id'],
+            (UserTable item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'email': item.email
+                }),
+        _userTableDeletionAdapter = DeletionAdapter(
+            database,
+            'user',
+            ['id'],
+            (UserTable item) => <String, Object?>{
+                  'id': item.id,
+                  'name': item.name,
+                  'email': item.email
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<UserTable> _userTableInsertionAdapter;
+
+  final UpdateAdapter<UserTable> _userTableUpdateAdapter;
+
+  final DeletionAdapter<UserTable> _userTableDeletionAdapter;
+
+  @override
+  Future<List<UserTable>> getAllUsers() async {
+    return _queryAdapter.queryList('SELECT * FROM user',
+        mapper: (Map<String, Object?> row) => UserTable(
+            id: row['id'] as int?,
+            name: row['name'] as String,
+            email: row['email'] as String));
+  }
+
+  @override
+  Future<int> insertUser(UserTable user) {
+    return _userTableInsertionAdapter.insertAndReturnId(
+        user, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> updateUser(UserTable user) {
+    return _userTableUpdateAdapter.updateAndReturnChangedRows(
+        user, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteUser(UserTable user) {
+    return _userTableDeletionAdapter.deleteAndReturnChangedRows(user);
+  }
+}
+
+class _$TableTmpDao extends TableTmpDao {
+  _$TableTmpDao(
+    this.database,
+    this.changeListener,
+  ) : _tableTmpInsertionAdapter = InsertionAdapter(
+            database,
+            'table_tmp',
+            (TableTmp item) => <String, Object?>{
+                  'fid': item.fid,
+                  'pid': item.pid,
+                  'someData': item.someData
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final InsertionAdapter<TableTmp> _tableTmpInsertionAdapter;
+
+  @override
+  Future<int> insertTemp(TableTmp tmp) {
+    return _tableTmpInsertionAdapter.insertAndReturnId(
+        tmp, OnConflictStrategy.abort);
+  }
 }

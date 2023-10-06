@@ -7,5 +7,16 @@ class UserTable {
   late final String name;
   late final String email;
 
-  UserTable(this.id, this.name, this.email);
+  UserTable({this.id, required this.name, required this.email});
+}
+
+@Entity(tableName: 'table_tmp')
+class TableTmp {
+  @ForeignKey(childColumns: ["fid"], parentColumns: ["id"], entity: UserTable)
+  late final int fid;
+  @PrimaryKey(autoGenerate: true)
+  late final int? pid;
+  late final String someData;
+
+  TableTmp({required this.fid, this.pid, required this.someData});
 }
