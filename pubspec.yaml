@@ -38,6 +38,8 @@ dependencies:
   floor: ^1.4.2
   floor_generator: ^1.4.2
   sqflite: ^2.3.0
+  build_runner: ^2.4.6
+
 
 dev_dependencies:
   flutter_test:
