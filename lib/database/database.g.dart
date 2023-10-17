@@ -71,7 +71,7 @@ class _$AppDatabase extends AppDatabase {
     Callback? callback,
   ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 1,
+      version: 2,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -89,7 +89,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `user` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `email` TEXT NOT NULL)');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `table_tmp` (`fid` INTEGER NOT NULL, `pid` INTEGER PRIMARY KEY AUTOINCREMENT, `someData` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `table_tmp` (`fid` INTEGER NOT NULL, `pid` INTEGER PRIMARY KEY AUTOINCREMENT, `someData` TEXT NOT NULL, `someData2` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -189,7 +189,8 @@ class _$TableTmpDao extends TableTmpDao {
             (TableTmp item) => <String, Object?>{
                   'fid': item.fid,
                   'pid': item.pid,
-                  'someData': item.someData
+                  'someData': item.someData,
+                  'someData2': item.someData2
                 });
 
   final sqflite.DatabaseExecutor database;

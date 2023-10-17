@@ -1,4 +1,3 @@
-import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 
 import 'database/database.dart';
@@ -63,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final user =
               UserTable(name: 'John Doe', email: 'johndoe@example.com');
           int res = await database.userDao.insertUser(user);
-          TableTmp t = TableTmp(fid: 1, someData: "abc");
+          TableTmp t = TableTmp(fid: 1, someData: "abc", someData2: '');
           await database.tableDao.insertTemp(t);
           debugPrint("Record inserted $res");
           getData();

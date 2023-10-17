@@ -17,6 +17,8 @@ class TableTmp {
   @PrimaryKey(autoGenerate: true)
   late final int? pid;
   late final String someData;
+  late final String someData2;
 
-  TableTmp({required this.fid, this.pid, required this.someData});
+
+  TableTmp({required this.fid, this.pid, required this.someData, required this.someData2});
 }
